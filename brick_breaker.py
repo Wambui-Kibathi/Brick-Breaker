@@ -30,7 +30,7 @@ BRICK_COLORS = [
     (180, 80, 255)   # row 5 - Purple
 ]
 
-# ── Game constants ─────────────────────────────────────────────────────────────
+# Game constants
 PADDLE_WIDTH    = 120
 PADDLE_HEIGHT   = 14
 PADDLE_SPEED    = 7
@@ -46,21 +46,16 @@ BRICK_HEIGHT    = 24
 BRICK_GAP       = 6
 BRICK_TOP_OFFSET = 80         # pixels from the top of the screen
 
-# ── Fonts ──────────────────────────────────────────────────────────────────────
+# Fonts 
 font_large  = pygame.font.SysFont("consolas", 52, bold=True)
 font_medium = pygame.font.SysFont("consolas", 28)
 font_small  = pygame.font.SysFont("consolas", 20)
 
-# ══════════════════════════════════════════════════════════════════════════════
 #  HELPER: draw a rounded rectangle (pygame < 2.x doesn't have draw.rect radius)
-# ══════════════════════════════════════════════════════════════════════════════
 def draw_rounded_rect(surface, colour, rect, radius=8):
     pygame.draw.rect(surface, colour, rect, border_radius=radius)
 
-
-# ══════════════════════════════════════════════════════════════════════════════
 #  CLASS: Paddle
-# ══════════════════════════════════════════════════════════════════════════════
 class Paddle:
     def __init__(self):
         self.reset()
@@ -91,10 +86,7 @@ class Paddle:
         highlight = pygame.Rect(self.x + 8, self.y + 3, self.width - 16, 4)
         pygame.draw.rect(surface, WHITE, highlight, border_radius=3)
 
-
-# ══════════════════════════════════════════════════════════════════════════════
 #  CLASS: Ball
-# ══════════════════════════════════════════════════════════════════════════════
 class Ball:
     def __init__(self, paddle):
         self.radius = BALL_RADIUS
@@ -126,7 +118,7 @@ class Ball:
         self.x += self.vx
         self.y += self.vy
 
-        # ── Wall collisions ────────────────────────────────────────────────────
+        # Wall collisions
         if self.x - self.radius <= 0:
             self.x  = self.radius
             self.vx = abs(self.vx)           # bounce right
@@ -139,11 +131,11 @@ class Ball:
             self.y  = self.radius
             self.vy = abs(self.vy)           # bounce down
 
-        # ── Fell below the screen ──────────────────────────────────────────────
+        # Fell below the screen
         if self.y - self.radius > SCREEN_HEIGHT:
             return "dead"
 
-        # ── Paddle collision ───────────────────────────────────────────────────
+        # Paddle collision
         ball_rect = pygame.Rect(
             self.x - self.radius, self.y - self.radius,
             self.radius * 2,      self.radius * 2
@@ -161,7 +153,7 @@ class Ball:
             if abs(self.vx) < 1:
                 self.vx = 1 if self.vx >= 0 else -1
 
-        # ── Brick collisions ───────────────────────────────────────────────────
+        # Brick collisions
         broken = None
         for brick in bricks:
             if not brick.alive:
@@ -199,10 +191,7 @@ class Ball:
         pygame.draw.circle(surface, WHITE,
                             (int(self.x) - 3, int(self.y) - 3), 3)
 
-
-# ══════════════════════════════════════════════════════════════════════════════
 #  CLASS: Brick
-# ══════════════════════════════════════════════════════════════════════════════
 class Brick:
     def __init__(self, row, col):
         # Calculate pixel position from grid row/col
@@ -228,39 +217,29 @@ class Brick:
         shine_col = tuple(min(255, c + 60) for c in self.colour)
         pygame.draw.rect(surface, shine_col, shine, border_radius=2)
 
-
-# ══════════════════════════════════════════════════════════════════════════════
 #  FUNCTION: build a fresh grid of bricks
-# ══════════════════════════════════════════════════════════════════════════════
 def make_bricks():
     return [Brick(row, col)
             for row in range(BRICK_ROWS)
             for col in range(BRICK_COLS)]
 
-
-# ══════════════════════════════════════════════════════════════════════════════
 #  FUNCTION: draw a semi-transparent dark overlay (for menus)
-# ══════════════════════════════════════════════════════════════════════════════
 def draw_overlay(surface, alpha=160):
     overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, alpha))
     surface.blit(overlay, (0, 0))
 
 
-# ══════════════════════════════════════════════════════════════════════════════
 #  FUNCTION: centred text helper
-# ══════════════════════════════════════════════════════════════════════════════
 def draw_centred_text(surface, text, font, colour, y):
     rendered = font.render(text, True, colour)
     rect = rendered.get_rect(centerx=SCREEN_WIDTH // 2, y=y)
     surface.blit(rendered, rect)
 
 
-# ══════════════════════════════════════════════════════════════════════════════
 #  MAIN GAME LOOP
-# ══════════════════════════════════════════════════════════════════════════════
 def main():
-    # ── Game state ─────────────────────────────────────────────────────────────
+    # Game state initialization
     paddle = Paddle()
     bricks = make_bricks()
     ball   = Ball(paddle)
@@ -272,7 +251,7 @@ def main():
     # States: "start", "playing", "game_over", "win"
     state = "start"
 
-    # ── Particle list for brick-break effect ───────────────────────────────────
+    # Particle list for brick-break effect 
     particles = []   # each particle: [x, y, vx, vy, radius, colour, lifetime]
 
     def spawn_particles(brick):
@@ -299,11 +278,11 @@ def main():
             r = max(1, int(p[4] * alpha_ratio))
             pygame.draw.circle(surface, p[5], (int(p[0]), int(p[1])), r)
 
-    # ── Main loop ──────────────────────────────────────────────────────────────
+    # Main loop 
     running = True
     while running:
 
-        # ── Events ─────────────────────────────────────────────────────────────
+        # Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -332,7 +311,7 @@ def main():
                         state   = "playing"
                         ball.launch()
 
-        # ── Update ─────────────────────────────────────────────────────────────
+        # Update
         if state == "playing":
             keys = pygame.key.get_pressed()
             paddle.move(keys)
@@ -358,7 +337,7 @@ def main():
             if all(not b.alive for b in bricks):
                 state = "win"
 
-        # ── Draw ───────────────────────────────────────────────────────────────
+        # Draw
         screen.fill(BLACK)
 
         # Subtle grid background
@@ -386,7 +365,7 @@ def main():
         pygame.draw.line(screen, (40, 40, 60),
                          (0, 46), (SCREEN_WIDTH, 46), 1)
 
-        # ── State overlays ──────────────────────────────────────────────────────
+        # State overlays
         if state == "start":
             draw_overlay(screen, 140)
             draw_centred_text(screen, "BRICK BREAKER", font_large, CYAN, 190)
@@ -417,6 +396,6 @@ def main():
     sys.exit()
 
 
-# ── Entry point ────────────────────────────────────────────────────────────────
+# Entry point
 if __name__ == "__main__":
     main()
