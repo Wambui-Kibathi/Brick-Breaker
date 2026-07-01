@@ -6,7 +6,8 @@ import sys
 pygame.init()
 
 # Set up the game window
-WIDTH, HEIGHT = 800, 600
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 FPS = 60
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
