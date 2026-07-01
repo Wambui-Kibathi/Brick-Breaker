@@ -1,34 +1,51 @@
-import pygame
-import random
-import sys
+"""
+===================================
+  BRICK BREAKER - Portfolio Game
+  Built with Pygame
+===================================
 
-# Initialize Pygame
+HOW TO PLAY:
+  - Move the paddle with LEFT / RIGHT arrow keys
+  - Break all the bricks to win
+  - Don't let the ball fall past your paddle!
+
+CONTROLS:
+  SPACE     - Launch ball / Restart after Game Over
+  LEFT/RIGHT - Move paddle
+  ESC        - Quit
+"""
+
+import pygame
+import sys
+import random
+
+# Initialise pygame
 pygame.init()
 
-# Set up the game window
-SCREEN_WIDTH = 800
+# Window settings
+SCREEN_WIDTH  = 800
 SCREEN_HEIGHT = 600
-FPS = 60
+FPS           = 60
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Brick Breaker")
 clock = pygame.time.Clock()
 
-# Define colors
-BLACK = (10, 10, 20)
-WHITE = (240, 240, 255)
-CYAN = (0, 220, 220)
-PADDLE_COLOR = (80, 160, 255)
-BALL_COLOR = (255, 220, 50)
+# Colour palette
+BLACK      = (10,  10,  20)
+WHITE      = (240, 240, 255)
+CYAN       = (0,   220, 220)
+PADDLE_COL = (80,  160, 255)
+BALL_COL   = (255, 220, 50)
 
-# Six rows of bricks, each row has its own color
-BRICK_COLORS = [
-    (255, 70, 70),   # row 0 - Red
-    (255, 140, 40),  # row 1 - Orange
-    (255, 220, 40),  # row 2 - Yellow
-    (60, 210, 80),   # row 3 - Green
-    (60, 160, 255),  # row 4 - Blue
-    (180, 80, 255)   # row 5 - Purple
+# Six rows of bricks, each row has its own colour
+BRICK_COLOURS = [
+    (255,  70,  70),   # row 0 – red
+    (255, 140,  40),   # row 1 – orange
+    (255, 220,  40),   # row 2 – yellow
+    ( 60, 210,  80),   # row 3 – green
+    ( 60, 160, 255),   # row 4 – blue
+    (180,  80, 255),   # row 5 – purple
 ]
 
 # Game constants
@@ -38,19 +55,20 @@ PADDLE_SPEED    = 7
 PADDLE_Y        = SCREEN_HEIGHT - 60
 
 BALL_RADIUS     = 9
-BALL_START_SPEED = 5          # pixels per frame (speed magnitude)
+BALL_START_SPEED = 5    # pixels per frame (speed magnitude)
 
 BRICK_COLS      = 10
 BRICK_ROWS      = 6
 BRICK_WIDTH     = 68
 BRICK_HEIGHT    = 24
 BRICK_GAP       = 6
-BRICK_TOP_OFFSET = 80         # pixels from the top of the screen
+BRICK_TOP_OFFSET = 80   # pixels from the top of the screen
 
-# Fonts 
+# Fonts
 font_large  = pygame.font.SysFont("consolas", 52, bold=True)
 font_medium = pygame.font.SysFont("consolas", 28)
 font_small  = pygame.font.SysFont("consolas", 20)
+
 
 #  HELPER: draw a rounded rectangle (pygame < 2.x doesn't have draw.rect radius)
 def draw_rounded_rect(surface, colour, rect, radius=8):
@@ -192,6 +210,7 @@ class Ball:
         pygame.draw.circle(surface, WHITE,
                             (int(self.x) - 3, int(self.y) - 3), 3)
 
+
 #  CLASS: Brick
 class Brick:
     def __init__(self, row, col):
@@ -218,6 +237,7 @@ class Brick:
         shine_col = tuple(min(255, c + 60) for c in self.colour)
         pygame.draw.rect(surface, shine_col, shine, border_radius=2)
 
+
 #  FUNCTION: build a fresh grid of bricks
 def make_bricks():
     return [Brick(row, col)
@@ -230,7 +250,6 @@ def draw_overlay(surface, alpha=160):
     overlay.fill((0, 0, 0, alpha))
     surface.blit(overlay, (0, 0))
 
-
 #  FUNCTION: centred text helper
 def draw_centred_text(surface, text, font, colour, y):
     rendered = font.render(text, True, colour)
@@ -240,7 +259,7 @@ def draw_centred_text(surface, text, font, colour, y):
 
 #  MAIN GAME LOOP
 def main():
-    # Game state initialization
+    # Game state
     paddle = Paddle()
     bricks = make_bricks()
     ball   = Ball(paddle)
@@ -252,7 +271,7 @@ def main():
     # States: "start", "playing", "game_over", "win"
     state = "start"
 
-    # Particle list for brick-break effect 
+    # Particle list for brick-break effect
     particles = []   # each particle: [x, y, vx, vy, radius, colour, lifetime]
 
     def spawn_particles(brick):
@@ -279,7 +298,7 @@ def main():
             r = max(1, int(p[4] * alpha_ratio))
             pygame.draw.circle(surface, p[5], (int(p[0]), int(p[1])), r)
 
-    # Main loop 
+    # Main loop
     running = True
     while running:
 
@@ -312,7 +331,7 @@ def main():
                         state   = "playing"
                         ball.launch()
 
-        # Update
+        # Update game objects
         if state == "playing":
             keys = pygame.key.get_pressed()
             paddle.move(keys)
